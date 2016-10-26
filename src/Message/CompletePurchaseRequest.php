@@ -10,34 +10,37 @@ use Omnipay\Common\Exception\InvalidRequestException;
  */
 class CompletePurchaseRequest extends AbstractRequest
 {
+	protected $endpoint = 'https://pay.bardo-gateway.com/trm/TransactionHandler.ashx';
     public function getData()
     {
-		$shopnumber = $this->getParameter('transactionId');
-		$username = $this->getParameter('username');
-		$password = $this->getParameter('password');
-		$clientid = $this->getParameter('clientid');
+	    $this->validate('transactionId', 'username', 'password', 'clientid');
 
-		if (is_null($username) or is_null($password)) {
-			throw new \Exception("Missing username or password", 1);
-		}
-		if (is_null($clientid)) {
-			throw new \Exception("Missing clientid", 1);
-		}
-
-		$data = $this->httpClient->post('https://pay.bardo-gateway.com/trm/TransactionHandler.ashx')
-		->setPostField('UserName', $username)
-		->setPostField('Password', $password)
-		->setPostField('SHOP_NUMBER', $shopnumber)
-		->setPostField('ClientId', $clientid)
-		->send();
-
-		return $data;
+	    $data = array();
+	    $data['SHOP_NUMBER'] = $this->getTransactionId();
+	    $data['UserName'] = $this->getParameter('username');
+	    $data['Password'] = $this->getParameter('password');
+	    $data['ClientId'] = $this->getParameter('clientid');
+	    return $data;
 
     }
 
     public function sendData($data)
     {
-        return $this->response = new CompletePurchaseResponse($this, $data->json());
+	    // don't throw exceptions for 4xx errors
+	    $this->httpClient->getEventDispatcher()->addListener(
+		    'request.error',
+		    function ($event) {
+			    if ($event['response']->isClientError()) {
+				    $event->stopPropagation();
+			    }
+		    }
+	    );
+	    $search = $this->httpClient->post($this->getEndpoint())
+		    ->addPostFields($data)
+		    ->send();
+
+        return $this->response = new CompletePurchaseResponse($this, $search->json());
+
     }
 
     public function getEndpoint()
