@@ -82,24 +82,7 @@ class PurchaseRequest extends AbstractRequest
 			}
 		);
 
-		$amount = $data['TRANSAC_AMOUNT'];
-		$currency = $data['CURRENCY_CODE'];
-		$productname = $data['PRODUCT_NAME'];
-		$ip = $data['CUSTOMER_IP'];
-		$email = $data['CUSTOMER_EMAIL'];
-		$languagecode = $data['LANGUAGE_CODE'];
-		$transactionId = $data['SHOP_NUMBER'];
-
-		$fname = $data['CUSTOMER_FIRST_NAME'];
-		$lname = $data['CUSTOMER_LAST_NAME'];
-		$address = $data['CUSTOMER_ADDRESS'];
-		$city = $data['CUSTOMER_CITY'];
-		$zipcode = $data['CUSTOMER_ZIP_CODE'];
-		$state = $data['CUSTOMER_STATE'];
-		$country = $data['CUSTOMER_COUNTRY'];
-		$phone = $data['CUSTOMER_PHONE'];
-
-		$returnUrl = $data['URL_RETURN'];
+		
 
 		$redirectUrl = $this->getEndpoint();
 
